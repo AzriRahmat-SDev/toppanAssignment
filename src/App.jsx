@@ -8,30 +8,52 @@ import 'tachyons'
 const App = () => {
 
   const [studentData, setStudentData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [count, setCount] = useState(false)
+  const [error, setError] = useState(false)
 
     const url = 'https://quanmgx57hjiqicdxgo2vzebqq0tghim.lambda-url.ap-southeast-1.on.aws'
 
     useEffect(() =>{
-      let interval = setInterval(getData,2000)
-      setInterval(() =>{
-        clearInterval(interval)
-      },4000)
+      apiCall()
     },[])
 
-    function getData(){
-      axios.get(url, {name: "fetching"}, { timeout: 1000})
-        .then(res => {
-            setStudentData(res.data)
-            setLoading(false)
-        })
-        .catch(err => {
-          console.log(err)
-          setLoading(true)
-        });
-        
+    async function apiCall(){
+      const result = await resolveAfterTwoCalls();
+      console.log(result)
     }
 
+    function resolveAfterTwoCalls(){
+      return new Promise(() => {
+          getData()
+      })
+    }
+
+    function getData(){
+      axios.get(url)
+        .then(res => {
+            setStudentData(res.data)
+            if(res.data != null){
+              setLoading(false)
+              setCount(true)
+              console.log("Api fetch was successful, Exiting")
+            }
+        })
+        .catch(err => {
+          console.log("Woah there was an error while fetching data, Trying to re-fetch")
+          setCount(0)
+          setLoading(true)
+          if(!count){
+              let interval = setInterval(getData,2000)
+              setInterval(() => {
+                clearInterval(interval)
+              },2000)
+          }else{
+            setError(true)
+          }
+        })
+    }
+    console.log("api called: " + count)
     console.table(studentData)
     const newData = studentData.reduce((accumulator, currentValue) => {
                 const existing = accumulator[currentValue.student_id];
@@ -52,7 +74,7 @@ const App = () => {
     return(
       <div className='App'>
         { loading ? 
-        <LoadingPage/>
+        <LoadingPage error={error}/>
         :
         <div>
         <h2 className="tc">Students</h2>
