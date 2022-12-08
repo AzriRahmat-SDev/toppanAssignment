@@ -1,4 +1,7 @@
 .App {
+    height: 100vh;
+    width: flex-grow;
+    background-color: #f4f4f4;
 }
 
 .textWarp {

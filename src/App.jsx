@@ -74,7 +74,7 @@ const App = () => {
 
 	return (
 		<div className="App">
-			<h2 className="tc">Students</h2>
+			<h2 className="tc f2 lh-copy">Students</h2>
 			{loading ? (
 				<LoadingPage error={error} handleRetryClick={handleRetryClick} />
 			) : (
@@ -83,7 +83,10 @@ const App = () => {
 						{Object.keys(newData).map((studentId) => {
 							const currentStudentData = newData[studentId];
 							return (
-								<Card className="br3 pa3 ma2 bw2 shadow-5 fl w5">
+								<Card
+									sx={{ borderRadius: '12px' }}
+									className="pa3 ma2 bw2 shadow-5 fl w5"
+								>
 									<CardContent>
 										<div>Student</div>
 									</CardContent>
