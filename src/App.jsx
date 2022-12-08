@@ -50,6 +50,7 @@ const App = () => {
 	}
 
 	function handleRetryClick() {
+		setError(false);
 		fetchWithRetry(getDataFromApi, 2);
 	}
 
