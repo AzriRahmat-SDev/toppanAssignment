@@ -7,7 +7,7 @@ import 'tachyons';
 const App = () => {
 	const [studentData, setStudentData] = useState([]);
 	const [loading, setLoading] = useState(false);
-	// const [retry, setRetry] = useState(true)
+	const [error, setError] = useState(false);
 
 	const url =
 		'https://quanmgx57hjiqicdxgo2vzebqq0tghim.lambda-url.ap-southeast-1.on.aws';
@@ -33,10 +33,11 @@ const App = () => {
 								caller();
 							}, 2000);
 						} else {
+							setError(true);
 							reject(error);
 						}
 					});
-			retry = 1;
+			retry = 0;
 			caller();
 		});
 	}
@@ -46,6 +47,10 @@ const App = () => {
 		const rawResponse = await fetch(url);
 		const jsonResponse = await rawResponse.json();
 		setStudentData(jsonResponse);
+	}
+
+	function handleRetryClick() {
+		fetchWithRetry(getDataFromApi, 2);
 	}
 
 	console.table(studentData);
@@ -69,11 +74,11 @@ const App = () => {
 
 	return (
 		<div className="App">
+			<h2 className="tc">Students</h2>
 			{loading ? (
-				<LoadingPage />
+				<LoadingPage error={error} handleRetryClick={handleRetryClick} />
 			) : (
 				<div>
-					<h2 className="tc">Students</h2>
 					<div className="mw9 center ph5-ns">
 						{Object.keys(newData).map((studentId) => {
 							const currentStudentData = newData[studentId];
